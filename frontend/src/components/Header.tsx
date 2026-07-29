@@ -1,4 +1,3 @@
-import React from 'react';
 import { Menu, Sun, Moon, LogOut } from 'lucide-react';
 import { motion } from 'motion/react';
 
