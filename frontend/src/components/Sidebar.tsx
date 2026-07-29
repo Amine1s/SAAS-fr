@@ -1,5 +1,4 @@
-import React from 'react';
-import { Store, Layers, Code, PlusCircle, Plus, X, ShieldAlert } from 'lucide-react';
+import { Store, Layers, Code, PlusCircle, Plus, X } from 'lucide-react';
 
 interface SidebarProps {
   currentView: 'dashboard' | 'code_sandbox';
