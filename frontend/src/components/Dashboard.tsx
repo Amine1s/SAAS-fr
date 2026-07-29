@@ -12,25 +12,18 @@ import {
   Clock,
   PackagePlus,
   Receipt,
-  RotateCcw,
-  RefreshCw,
-  ShieldCheck,
   Building2,
   UserCheck,
   Users,
   ClipboardList,
   BookOpen,
   Layers,
-  Filter,
   Search,
-  Download,
-  Trash2,
   ShieldAlert,
   MapPin,
   Mail,
   Phone,
   BarChart3,
-  Calendar,
   AlertTriangle
 } from 'lucide-react';
 import { Product, Invoice, ChartPoint, StoreActivity, Warehouse, Supplier, Customer, Category, StockMovement } from '../types';
@@ -87,8 +80,8 @@ export default function Dashboard({
   addActivity,
   handleQuickQuantityUpdate,
   setShowAddProductModal,
-  setShowAddInvoiceModal,
-  setInvoices,
+  setShowAddInvoiceModal: _setShowAddInvoiceModal,
+  setInvoices: _setInvoices,
   triggerNotification
 }: DashboardProps) {
   // تتبع التبويب النشط في لوحة الإدارة
@@ -96,7 +89,6 @@ export default function Dashboard({
   
   // تتبع فترة الرسم البياني
   const [chartTimeframe, setChartTimeframe] = useState<'weekly' | 'monthly'>('weekly');
-  const [hoveredPoint, setHoveredPoint] = useState<ChartPoint | null>(null);
 
   // ولايات البحث والفلترة للمنتجات
   const [productSearch, setProductSearch] = useState('');
@@ -119,7 +111,6 @@ export default function Dashboard({
 
   // التحقق من الصلاحيات والتحكم بالوصول
   const hasWriteAccess = userRole === 'admin' || userRole === 'manager';
-  const isAdmin = userRole === 'admin';
 
   // معالج تصدير الفواتير بصيغة إكسل
   const handleExportToExcel = () => {
@@ -659,10 +650,8 @@ export default function Dashboard({
     .reduce((sum, inv) => sum + (inv.totalAmount * 1.15), 0);
 
   const lowStockProducts = products.filter(p => p.quantity > 0 && p.quantity <= 10);
-  const totalInStock = products.length;
 
   const currentChartPoints = chartTimeframe === 'weekly' ? weeklyChartData : monthlyChartData;
-  const maxSalesValue = currentChartPoints.length > 0 ? Math.max(...currentChartPoints.map(p => p.sales), 100) : 100;
 
   // فلترة وتصنيف وعرض المنتجات
   const filteredProducts = products.filter(p => {
