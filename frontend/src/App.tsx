@@ -173,15 +173,15 @@ export default function App() {
   const fetchBackendData = async () => {
     try {
       const [prodRes, invRes, actRes, chartRes, whRes, supRes, custRes, catRes, movRes] = await Promise.all([
-        fetch(`${API_BASE}/api/products`).then(res => res.json()),
-        fetch(`${API_BASE}/api/invoices`).then(res => res.json()),
-        fetch(`${API_BASE}/api/activities`).then(res => res.json()),
-        fetch(`${API_BASE}/api/charts`).then(res => res.json()),
-        fetch(`${API_BASE}/api/warehouses`).then(res => res.json()),
-        fetch(`${API_BASE}/api/suppliers`).then(res => res.json()),
-        fetch(`${API_BASE}/api/customers`).then(res => res.json()),
-        fetch(`${API_BASE}/api/categories`).then(res => res.json()),
-        fetch(`${API_BASE}/api/stock-movements`).then(res => res.json())
+        fetch(getApiUrl('/api/products')).then(res => res.json()),
+        fetch(getApiUrl('/api/invoices')).then(res => res.json()),
+        fetch(getApiUrl('/api/activities')).then(res => res.json()),
+        fetch(getApiUrl('/api/charts')).then(res => res.json()),
+        fetch(getApiUrl('/api/warehouses')).then(res => res.json()),
+        fetch(getApiUrl('/api/suppliers')).then(res => res.json()),
+        fetch(getApiUrl('/api/customers')).then(res => res.json()),
+        fetch(getApiUrl('/api/categories')).then(res => res.json()),
+        fetch(getApiUrl('/api/stock-movements')).then(res => res.json())
       ]);
       
       if (prodRes.success && prodRes.products) {
