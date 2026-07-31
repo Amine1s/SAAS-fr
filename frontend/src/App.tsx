@@ -4,7 +4,7 @@ import { X } from 'lucide-react';
 
 import { Product, Invoice, StoreActivity, ChartPoint, Warehouse, Supplier, Customer, Category, StockMovement } from './types';
 import { CODE_SNIPPETS } from './data';
-import { API_BASE } from './config';
+import { API_BASE, getApiUrl } from './config';
 
 import Sidebar from './components/Sidebar';
 import Header from './components/Header';
