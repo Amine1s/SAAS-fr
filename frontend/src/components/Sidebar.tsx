@@ -1,4 +1,5 @@
 import { Store, Layers, Code, PlusCircle, Plus, X } from 'lucide-react';
+import '../styles/Sidebar.css';
 
 interface SidebarProps {
   currentView: 'dashboard' | 'code_sandbox';
@@ -23,14 +24,22 @@ export default function Sidebar({
 }: SidebarProps) {
   // القائمة الجانبية لإدارة التنقل والتحكم الرئيسي
   return (
-    <aside 
-      id="sidebar-container"
-      className={`w-64 text-white shadow-2xl flex flex-col shrink-0 transition-transform duration-300 md:translate-x-0 ${
-        sidebarOpen ? 'translate-x-0' : 'translate-x-64'
-      } fixed md:relative z-40 h-full right-0 transition-colors duration-500 ${
-        darkMode ? 'bg-[#021812] border-l border-emerald-950/40' : 'bg-[#064E3B]'
-      }`}
-    >
+    <>
+      {/* خلفية التعتيم للهاتف عند فتح القائمة */}
+      {sidebarOpen && (
+        <div 
+          className="fixed inset-0 bg-black/50 backdrop-blur-xs z-35 md:hidden"
+          onClick={() => setSidebarOpen(false)}
+        />
+      )}
+      <aside 
+        id="sidebar-container"
+        className={`sidebar-container w-64 text-white shadow-2xl flex flex-col shrink-0 transition-transform duration-300 md:translate-x-0 ${
+          sidebarOpen ? 'translate-x-0' : 'translate-x-64'
+        } fixed md:relative z-40 h-full right-0 transition-colors duration-500 ${
+          darkMode ? 'bg-[#021812] border-l border-emerald-950/40' : 'bg-[#064E3B]'
+        }`}
+      >
       {/* هيدر القائمة الجانبية والشعار */}
       <div className="p-5 border-b border-white/10 flex items-center justify-between gap-3">
         <div className="flex items-center gap-2.5">
@@ -108,14 +117,14 @@ export default function Sidebar({
           {userRole === 'manager' && (
             <div className="mt-4 p-3 bg-white/5 rounded-xl border border-white/10 text-[10px] text-white/60 leading-relaxed">
               <span className="text-[#10B981] font-bold block mb-1">صلاحية مدير المستودع:</span>
-              تتيح لك هذه الصلاحية التحكم الكامل بالبضائع، التوريد، الفئات، وحركات الشحن. تم قفل إصدار الفواتير المالية لك.
+              تتيح لك الوصول لسجل العمليات والتقارير وإدارة المخازن وحركات المخزون وتصنيف المنتجات والموردين والعملاء.
             </div>
           )}
 
           {userRole === 'cashier' && (
             <div className="mt-4 p-3 bg-white/5 rounded-xl border border-white/10 text-[10px] text-white/60 leading-relaxed">
-              <span className="text-[#10B981] font-bold block mb-1">صلاحية أمين الصندوق:</span>
-              تتيح لك إصدار الفواتير الفورية ومعاينة الأرصدة المتوفرة. تم قفل تعديل المخزون أو إدخال بضائع جديدة لك.
+              <span className="text-[#10B981] font-bold block mb-1">صلاحية أمين الصندوق (الكاشير):</span>
+              تتيح لك اللوحة الإحصائية، حركات المخزون، سجل عمليات البيع، ومعاينة كميات السلع دون تعديل، بالإضافة إلى إصدار الفواتير.
             </div>
           )}
         </div>
@@ -132,5 +141,6 @@ export default function Sidebar({
         <span className="text-[9px] text-[#10B981] mt-1 font-mono">ZATCA VAT SIMULATOR v2.6</span>
       </div>
     </aside>
+  </>
   );
 }

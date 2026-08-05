@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { motion, AnimatePresence } from 'motion/react';
-import { X } from 'lucide-react';
+import { X, CheckCircle2, AlertCircle, Info } from 'lucide-react';
 
 import { Product, Invoice, StoreActivity, ChartPoint, Warehouse, Supplier, Customer, Category, StockMovement } from './types';
 import { CODE_SNIPPETS } from './data';
@@ -13,6 +13,7 @@ import CodeSandbox from './components/CodeSandbox';
 import AddProductModal from './components/AddProductModal';
 import AddInvoiceModal from './components/AddInvoiceModal';
 import { Login } from './components/Login';
+import './styles/MobileLayout.css';
 
 export default function App() {
   // تتبع حالة تسجيل الدخول التابعة للنظام
@@ -224,7 +225,7 @@ export default function App() {
 
   const addActivity = async (type: StoreActivity['type'], message: string, meta?: string) => {
     try {
-      const res = await fetch(`${API_BASE}/api/activities`, {
+      const res = await fetch(getApiUrl('/api/activities'), {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ type, message, meta })
@@ -293,7 +294,7 @@ export default function App() {
 
   useEffect(() => {
     if (notification) {
-      const timer = setTimeout(() => setNotification(null), 4000);
+      const timer = setTimeout(() => setNotification(null), 2000); // يستمر 2 ثانية بالضبط كما تم الطلب
       return () => clearTimeout(timer);
     }
   }, [notification]);
@@ -396,7 +397,7 @@ export default function App() {
     }
 
     try {
-      const res = await fetch(`${API_BASE}/api/products`, {
+      const res = await fetch(getApiUrl('/api/products'), {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json'
@@ -450,7 +451,7 @@ export default function App() {
     }
 
     try {
-      const res = await fetch(`${API_BASE}/api/products/${productId}/stock`, {
+      const res = await fetch(getApiUrl(`/api/products/${productId}/stock`), {
         method: 'PATCH',
         headers: {
           'Content-Type': 'application/json'
@@ -525,7 +526,7 @@ export default function App() {
     const paidSum = isRefunded ? 0 : (isPartial ? Number(amountPaid) || 0 : finalTotal);
 
     try {
-      const res = await fetch(`${API_BASE}/api/invoices`, {
+      const res = await fetch(getApiUrl('/api/invoices'), {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json'
@@ -569,30 +570,36 @@ export default function App() {
         : 'bg-[#F4FBF7] text-[#1F2937]'
     }`} dir="rtl">
       
-      {/* شاشة التنبيهات المنبثقة */}
+      {/* شاشة التنبيهات العائمة الناعمة المريحة والعصرية */}
       <AnimatePresence>
         {notification && (
           <motion.div 
-            initial={{ opacity: 0, y: -50, scale: 0.9 }}
+            initial={{ opacity: 0, y: -24, scale: 0.95 }}
             animate={{ opacity: 1, y: 0, scale: 1 }}
-            exit={{ opacity: 0, y: -20, scale: 0.9 }}
-            className="fixed top-6 left-1/2 -translate-x-1/2 z-50 max-w-md w-full px-4 font-sans"
+            exit={{ opacity: 0, y: -16, scale: 0.95 }}
+            transition={{ duration: 0.25, ease: [0.16, 1, 0.3, 1] }}
+            className="fixed top-5 left-1/2 -translate-x-1/2 z-[100] px-3 font-sans pointer-events-none"
           >
-            <div className={`p-4 rounded-xl shadow-xl border flex items-center justify-between gap-3 ${
+            <div className={`py-2 px-4 rounded-full shadow-lg border backdrop-blur-xl flex items-center gap-2.5 pointer-events-auto transition-all ${
               notification.type === 'green' 
-                ? 'bg-emerald-50 border-emerald-200 text-emerald-950' 
+                ? 'bg-slate-900/90 dark:bg-emerald-950/90 border-emerald-500/35 text-emerald-100 shadow-emerald-950/30' 
                 : notification.type === 'red' 
-                ? 'bg-red-50 border-red-200 text-red-950' 
-                : 'bg-amber-50 border-amber-200 text-amber-950'
+                ? 'bg-slate-900/90 dark:bg-rose-950/90 border-rose-500/35 text-rose-100 shadow-rose-950/30' 
+                : 'bg-slate-900/90 dark:bg-amber-950/90 border-amber-500/35 text-amber-100 shadow-amber-950/30'
             }`}>
-              <div className="flex items-center gap-2.5">
-                <span className={`h-2.5 w-2.5 rounded-full ${
-                  notification.type === 'green' ? 'bg-[#22C55E]' : notification.type === 'red' ? 'bg-[#EF4444]' : 'bg-[#F59E0B]'
-                }`} />
-                <p className="text-xs sm:text-sm font-semibold">{notification.text}</p>
-              </div>
-              <button onClick={() => setNotification(null)} className="hover:opacity-75">
-                <X className="h-4 w-4" />
+              {notification.type === 'green' ? (
+                <CheckCircle2 className="h-4 w-4 text-emerald-400 shrink-0" />
+              ) : notification.type === 'red' ? (
+                <AlertCircle className="h-4 w-4 text-rose-400 shrink-0" />
+              ) : (
+                <Info className="h-4 w-4 text-amber-400 shrink-0" />
+              )}
+              <span className="text-xs sm:text-sm font-semibold tracking-tight whitespace-nowrap">{notification.text}</span>
+              <button 
+                onClick={() => setNotification(null)} 
+                className="mr-1.5 p-0.5 text-white/50 hover:text-white rounded-full hover:bg-white/10 transition-colors cursor-pointer shrink-0"
+              >
+                <X className="h-3.5 w-3.5" />
               </button>
             </div>
           </motion.div>
@@ -642,7 +649,7 @@ export default function App() {
               />
 
               {/* محتويات العرض حسب التبويب النشط */}
-              <div className="p-4 sm:p-6 lg:p-8 max-w-7xl mx-auto space-y-6">
+              <div className="app-main-content p-3.5 sm:p-6 lg:p-8 max-w-7xl mx-auto space-y-6">
                 {currentView === 'dashboard' ? (
                   <Dashboard 
                     darkMode={darkMode}

@@ -1,6 +1,7 @@
 import React from 'react';
 import { Code, Server, Cpu, FileText, FileCode, Check, Copy } from 'lucide-react';
 import { CODE_SNIPPETS } from '../data';
+import '../styles/CodeSandbox.css';
 
 interface CodeSandboxProps {
   darkMode: boolean;
@@ -19,10 +20,10 @@ export default function CodeSandbox({
 }: CodeSandboxProps) {
   // بيئة صياغة الكود والملفات البرمجية للمطور للتكامل مع قاعدة غوغل وبوستجرس
   return (
-    <div id="code-sandbox-wrapper" className="space-y-6">
+    <div id="code-sandbox-wrapper" className="codesandbox-container space-y-6">
       
       {/* 1. رأس التبويب والخيارات الفيدرالية */}
-      <div className={`transition-all duration-500 border rounded-2xl p-6 shadow-sm space-y-4 ${
+      <div className={`transition-all duration-500 border rounded-2xl p-4 sm:p-6 shadow-sm space-y-4 ${
         darkMode ? 'bg-[#08291f] border-emerald-900/60 text-white' : 'bg-white border-emerald-100'
       }`}>
         <div className="flex items-center gap-3">

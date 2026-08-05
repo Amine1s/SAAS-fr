@@ -2,6 +2,7 @@ import React from 'react';
 import { motion, AnimatePresence } from 'motion/react';
 import { PlusCircle, Plus, Trash, X } from 'lucide-react';
 import { Product } from '../types';
+import '../styles/AddInvoiceModal.css';
 
 interface AddInvoiceModalProps {
   isOpen: boolean;
@@ -74,14 +75,14 @@ export default function AddInvoiceModal({
   return (
     <AnimatePresence>
       {isOpen && (
-        <div id="add-invoice-modal-container" className="fixed inset-0 z-50 overflow-y-auto bg-black/60 backdrop-blur-sm flex items-center justify-center p-4">
+        <div id="add-invoice-modal-container" className="invoice-modal-backdrop fixed inset-0 z-50 overflow-y-auto bg-black/60 backdrop-blur-sm flex items-center justify-center p-3 sm:p-4">
           <motion.div 
             initial={{ scale: 0.95, opacity: 0 }}
             animate={{ scale: 1, opacity: 1 }}
             exit={{ scale: 0.95, opacity: 0 }}
-            className={`transition-all duration-500 rounded-2xl p-6 shadow-2xl space-y-4 border ${
+            className={`invoice-modal-card transition-all duration-500 rounded-2xl p-5 sm:p-6 shadow-2xl space-y-4 border mx-3 my-auto ${
               darkMode ? 'bg-[#0a2f24] text-white border-emerald-900/60' : 'bg-white border-emerald-100 text-slate-800'
-            } max-w-2xl w-full max-h-[90vh] overflow-y-auto`}
+            } max-w-2xl w-full max-h-[88vh] overflow-y-auto`}
           >
             {/* الهيدر وقفل النافذة */}
             <div className={`flex justify-between items-center pb-3 border-b ${darkMode ? 'border-emerald-900/40' : 'border-slate-100'}`}>

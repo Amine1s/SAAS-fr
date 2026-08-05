@@ -1,5 +1,6 @@
 import { Menu, Sun, Moon, LogOut } from 'lucide-react';
 import { motion } from 'motion/react';
+import '../styles/Header.css';
 
 interface HeaderProps {
   currentView: 'dashboard' | 'code_sandbox';
@@ -24,7 +25,7 @@ export default function Header({
   return (
     <header 
       id="app-header"
-      className={`py-3.5 px-6 flex items-center justify-between shadow-sm border-b transition-colors duration-500 ${
+      className={`header-container py-3.5 px-4 sm:px-6 flex items-center justify-between shadow-sm border-b transition-colors duration-500 ${
         darkMode 
           ? 'bg-[#051e16] border-emerald-950/40' 
           : 'bg-white border-emerald-100/60'

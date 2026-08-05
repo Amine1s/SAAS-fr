@@ -28,6 +28,7 @@ import {
 } from 'lucide-react';
 import { Product, Invoice, ChartPoint, StoreActivity, Warehouse, Supplier, Customer, Category, StockMovement } from '../types';
 import { API_BASE } from '../config';
+import '../styles/Dashboard.css';
 import {
   ResponsiveContainer,
   ComposedChart,
@@ -86,6 +87,12 @@ export default function Dashboard({
 }: DashboardProps) {
   // تتبع التبويب النشط في لوحة الإدارة
   const [activeTab, setActiveTab] = useState<'overview' | 'products' | 'categories' | 'warehouses' | 'suppliers_customers' | 'movements' | 'activities' | 'reports'>('overview');
+
+  React.useEffect(() => {
+    if (userRole === 'cashier' && ['warehouses', 'categories', 'suppliers_customers', 'reports'].includes(activeTab)) {
+      setActiveTab('overview');
+    }
+  }, [userRole, activeTab]);
   
   // تتبع فترة الرسم البياني
   const [chartTimeframe, setChartTimeframe] = useState<'weekly' | 'monthly'>('weekly');
@@ -673,12 +680,13 @@ export default function Dashboard({
   });
 
   return (
-    <div id="dashboard-view-wrapper" className="space-y-6">
+    <div id="dashboard-view-wrapper" className="dashboard-container space-y-6">
       
       {/* 0. شريط التبويبات العلوي للوصول السريع لجميع أدوات SaaS المتقدمة */}
-      <div className={`p-1.5 rounded-2xl flex flex-wrap gap-1 shadow-sm border transition-all duration-500 ${
+      <div className={`dashboard-tabs-bar mobile-scroll-tabs p-1.5 rounded-2xl flex flex-wrap gap-1 shadow-sm border transition-all duration-500 ${
         darkMode ? 'bg-[#05231b]/60 border-emerald-950/80' : 'bg-white border-emerald-100'
       }`}>
+        {/* 1. اللوحة الإحصائية: متاحة لجميع الصلاحيات */}
         <button
           onClick={() => setActiveTab('overview')}
           className={`flex items-center gap-2 px-4 py-2.5 rounded-xl text-xs sm:text-sm font-bold transition-all cursor-pointer ${
@@ -691,6 +699,7 @@ export default function Dashboard({
           <span>اللوحة الإحصائية</span>
         </button>
 
+        {/* 2. الأصناف والمنتجات: متوفر لجميع الصلاحيات */}
         <button
           onClick={() => setActiveTab('products')}
           className={`flex items-center gap-2 px-4 py-2.5 rounded-xl text-xs sm:text-sm font-bold transition-all cursor-pointer relative ${
@@ -708,45 +717,55 @@ export default function Dashboard({
           )}
         </button>
 
-        <button
-          onClick={() => setActiveTab('warehouses')}
-          className={`flex items-center gap-2 px-4 py-2.5 rounded-xl text-xs sm:text-sm font-bold transition-all cursor-pointer ${
-            activeTab === 'warehouses'
-              ? 'bg-[#10B981] text-slate-950 shadow-md font-extrabold'
-              : darkMode ? 'text-emerald-300 hover:bg-[#07362a]/50' : 'text-slate-600 hover:bg-slate-50'
-          }`}
-        >
-          <Building2 className="h-4 w-4" />
-          <span>إدارة المخازن</span>
-          <span className="hidden sm:inline-block text-[10px] bg-emerald-500/10 px-1.5 py-0.5 rounded text-[#10B981]">
-            {warehouses.length}
-          </span>
-        </button>
+        {/* 3. إدارة المخازن: للأدمن ومدير المستودع فقط */}
+        {userRole !== 'cashier' && (
+          <button
+            onClick={() => setActiveTab('warehouses')}
+            className={`flex items-center gap-2 px-4 py-2.5 rounded-xl text-xs sm:text-sm font-bold transition-all cursor-pointer ${
+              activeTab === 'warehouses'
+                ? 'bg-[#10B981] text-slate-950 shadow-md font-extrabold'
+                : darkMode ? 'text-emerald-300 hover:bg-[#07362a]/50' : 'text-slate-600 hover:bg-slate-50'
+            }`}
+          >
+            <Building2 className="h-4 w-4" />
+            <span>إدارة المخازن</span>
+            <span className="hidden sm:inline-block text-[10px] bg-emerald-500/10 px-1.5 py-0.5 rounded text-[#10B981]">
+              {warehouses.length}
+            </span>
+          </button>
+        )}
 
-        <button
-          onClick={() => setActiveTab('categories')}
-          className={`flex items-center gap-2 px-4 py-2.5 rounded-xl text-xs sm:text-sm font-bold transition-all cursor-pointer ${
-            activeTab === 'categories'
-              ? 'bg-[#10B981] text-slate-950 shadow-md font-extrabold'
-              : darkMode ? 'text-emerald-300 hover:bg-[#07362a]/50' : 'text-slate-600 hover:bg-slate-50'
-          }`}
-        >
-          <BookOpen className="h-4 w-4" />
-          <span>تصنيف المنتجات</span>
-        </button>
+        {/* 4. تصنيف المنتجات: للأدمن ومدير المستودع فقط */}
+        {userRole !== 'cashier' && (
+          <button
+            onClick={() => setActiveTab('categories')}
+            className={`flex items-center gap-2 px-4 py-2.5 rounded-xl text-xs sm:text-sm font-bold transition-all cursor-pointer ${
+              activeTab === 'categories'
+                ? 'bg-[#10B981] text-slate-950 shadow-md font-extrabold'
+                : darkMode ? 'text-emerald-300 hover:bg-[#07362a]/50' : 'text-slate-600 hover:bg-slate-50'
+            }`}
+          >
+            <BookOpen className="h-4 w-4" />
+            <span>تصنيف المنتجات</span>
+          </button>
+        )}
 
-        <button
-          onClick={() => setActiveTab('suppliers_customers')}
-          className={`flex items-center gap-2 px-4 py-2.5 rounded-xl text-xs sm:text-sm font-bold transition-all cursor-pointer ${
-            activeTab === 'suppliers_customers'
-              ? 'bg-[#10B981] text-slate-950 shadow-md font-extrabold'
-              : darkMode ? 'text-emerald-300 hover:bg-[#07362a]/50' : 'text-slate-600 hover:bg-slate-50'
-          }`}
-        >
-          <Users className="h-4 w-4" />
-          <span>الموردين والعملاء</span>
-        </button>
+        {/* 5. الموردين والعملاء: للأدمن ومدير المستودع فقط */}
+        {userRole !== 'cashier' && (
+          <button
+            onClick={() => setActiveTab('suppliers_customers')}
+            className={`flex items-center gap-2 px-4 py-2.5 rounded-xl text-xs sm:text-sm font-bold transition-all cursor-pointer ${
+              activeTab === 'suppliers_customers'
+                ? 'bg-[#10B981] text-slate-950 shadow-md font-extrabold'
+                : darkMode ? 'text-emerald-300 hover:bg-[#07362a]/50' : 'text-slate-600 hover:bg-slate-50'
+            }`}
+          >
+            <Users className="h-4 w-4" />
+            <span>الموردين والعملاء</span>
+          </button>
+        )}
 
+        {/* 6. حركات المخزون: متوفر لجميع الصلاحيات */}
         <button
           onClick={() => setActiveTab('movements')}
           className={`flex items-center gap-2 px-4 py-2.5 rounded-xl text-xs sm:text-sm font-bold transition-all cursor-pointer ${
@@ -759,6 +778,7 @@ export default function Dashboard({
           <span>حركات المخزون</span>
         </button>
 
+        {/* 7. سجل العمليات: متوفر لجميع الصلاحيات */}
         <button
           onClick={() => setActiveTab('activities')}
           className={`flex items-center gap-2 px-4 py-2.5 rounded-xl text-xs sm:text-sm font-bold transition-all cursor-pointer ${
@@ -771,17 +791,20 @@ export default function Dashboard({
           <span>سجل العمليات</span>
         </button>
 
-        <button
-          onClick={() => setActiveTab('reports')}
-          className={`flex items-center gap-2 px-4 py-2.5 rounded-xl text-xs sm:text-sm font-bold transition-all cursor-pointer ${
-            activeTab === 'reports'
-              ? 'bg-[#10B981] text-slate-950 shadow-md font-extrabold'
-              : darkMode ? 'text-emerald-300 hover:bg-[#07362a]/50' : 'text-slate-600 hover:bg-slate-50'
-          }`}
-        >
-          <FileText className="h-4 w-4" />
-          <span>التقارير والتصدير</span>
-        </button>
+        {/* 8. التقارير والتصدير: للأدمن ومدير المستودع فقط */}
+        {userRole !== 'cashier' && (
+          <button
+            onClick={() => setActiveTab('reports')}
+            className={`flex items-center gap-2 px-4 py-2.5 rounded-xl text-xs sm:text-sm font-bold transition-all cursor-pointer ${
+              activeTab === 'reports'
+                ? 'bg-[#10B981] text-slate-950 shadow-md font-extrabold'
+                : darkMode ? 'text-emerald-300 hover:bg-[#07362a]/50' : 'text-slate-600 hover:bg-slate-50'
+            }`}
+          >
+            <FileText className="h-4 w-4" />
+            <span>التقارير والتصدير</span>
+          </button>
+        )}
       </div>
 
       {/* ======================= التبويب الأول: اللوحة الإحصائية العامة ======================= */}
@@ -1013,7 +1036,11 @@ export default function Dashboard({
           <div className="flex flex-col md:flex-row md:items-center justify-between gap-4 pb-4 border-b border-emerald-900/10 mb-6">
             <div className="space-y-1">
               <h3 className="font-bold text-base text-emerald-400">سجل ودليل البضائع والمنتجات المودعة</h3>
-              <p className="text-xs text-slate-400">إجمالي الأصناف الفعالة بالمستودع: {products.length} أصناف تجارية</p>
+              <p className="text-xs text-slate-400">
+                {userRole === 'cashier' 
+                  ? `إجمالي الأصناف والمنتجات المسجلة: ${products.length} أصناف تجارية` 
+                  : `إجمالي الأصناف الفعالة بالمستودع: ${products.length} أصناف تجارية`}
+              </p>
             </div>
             
             <div className="flex flex-wrap gap-2">
@@ -1047,7 +1074,7 @@ export default function Dashboard({
           </div>
 
           {/* تصفية وبحث متقدم */}
-          <div className="grid grid-cols-1 sm:grid-cols-3 gap-3 mb-6">
+          <div className={`grid grid-cols-1 ${userRole !== 'cashier' ? 'sm:grid-cols-3' : 'sm:grid-cols-2'} gap-3 mb-6`}>
             <div className="relative">
               <span className="absolute inset-y-0 right-0 pr-3 flex items-center pointer-events-none">
                 <Search className="h-4 w-4 text-slate-400" />
@@ -1082,22 +1109,24 @@ export default function Dashboard({
               </select>
             </div>
 
-            <div>
-              <select
-                value={productWarehouseFilter}
-                onChange={(e) => setProductWarehouseFilter(e.target.value)}
-                className={`w-full px-3 py-2 text-xs rounded-xl border outline-none transition-all ${
-                  darkMode 
-                    ? 'bg-[#031510] border-emerald-900/60 text-emerald-100 focus:border-emerald-500' 
-                    : 'bg-slate-50 border-slate-200 text-slate-800 focus:border-emerald-500'
-                }`}
-              >
-                <option value="">-- فلترة حسب المستودع --</option>
-                {warehouses.map(wh => (
-                  <option key={wh.id} value={wh.id}>{wh.name}</option>
-                ))}
-              </select>
-            </div>
+            {userRole !== 'cashier' && (
+              <div>
+                <select
+                  value={productWarehouseFilter}
+                  onChange={(e) => setProductWarehouseFilter(e.target.value)}
+                  className={`w-full px-3 py-2 text-xs rounded-xl border outline-none transition-all ${
+                    darkMode 
+                      ? 'bg-[#031510] border-emerald-900/60 text-emerald-100 focus:border-emerald-500' 
+                      : 'bg-slate-50 border-slate-200 text-slate-800 focus:border-emerald-500'
+                  }`}
+                >
+                  <option value="">-- فلترة حسب المستودع --</option>
+                  {warehouses.map(wh => (
+                    <option key={wh.id} value={wh.id}>{wh.name}</option>
+                  ))}
+                </select>
+              </div>
+            )}
           </div>
 
           {/* جدول البضائع الأساسي */}
@@ -1109,7 +1138,7 @@ export default function Dashboard({
                   <th className="pb-3">تفاصيل الصنف</th>
                   <th className="pb-3 font-mono">SKU</th>
                   <th className="pb-3">الفئة والتصنيف</th>
-                  <th className="pb-3">المستودع الرئيسي</th>
+                  {userRole !== 'cashier' && <th className="pb-3">المستودع الرئيسي</th>}
                   <th className="pb-3 text-center">السعر المعتمد</th>
                   <th className="pb-3 text-center">الرصيد الفعلي</th>
                   <th className="pb-3 text-center">الحالة</th>
@@ -1119,7 +1148,7 @@ export default function Dashboard({
               <tbody className="divide-y divide-emerald-900/10">
                 {filteredProducts.length === 0 ? (
                   <tr>
-                    <td colSpan={9} className="text-center py-10 text-slate-400">
+                    <td colSpan={userRole !== 'cashier' ? (hasWriteAccess ? 9 : 8) : 7} className="text-center py-10 text-slate-400">
                       لا توجد بضائع تطابق محددات البحث والفلترة الحالية.
                     </td>
                   </tr>
@@ -1143,7 +1172,9 @@ export default function Dashboard({
                         </td>
                         <td className="py-3.5 font-mono font-semibold">{p.sku}</td>
                         <td className="py-3.5 font-bold text-[#10B981]">{p.category}</td>
-                        <td className="py-3.5 text-slate-450">{matchedWh ? matchedWh.name : 'مستودع غير مخصص'}</td>
+                        {userRole !== 'cashier' && (
+                          <td className="py-3.5 text-slate-450">{matchedWh ? matchedWh.name : 'مستودع غير مخصص'}</td>
+                        )}
                         <td className="py-3.5 text-center font-mono font-bold">{p.price.toFixed(2)} ر.س</td>
                         <td className="py-3.5 text-center font-mono font-bold">{p.quantity} وحدة</td>
                         <td className="py-3.5 text-center">
@@ -1681,7 +1712,7 @@ export default function Dashboard({
                         <strong className="text-sm font-bold">{mov.productName}</strong>
                       </div>
                       <p className="text-[10px] text-slate-400 font-mono mt-0.5">
-                        كمية الحركة: <span className="font-bold text-white">{mov.quantity} وحدة</span> | مستودع: {mov.warehouseName}
+                        كمية الحركة: <span className="font-bold text-white">{mov.quantity} وحدة</span>{userRole !== 'cashier' && <> | مستودع: {mov.warehouseName}</>}
                       </p>
                       <p className={`text-[10px] italic ${darkMode ? 'text-emerald-500/60' : 'text-slate-500'}`}>ملاحظة: {mov.notes}</p>
                     </div>
